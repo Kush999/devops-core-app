@@ -44,4 +44,4 @@ jobs:
 
         - name: Build Docker image
           run: |
-                doocker build -t devops-core-app:${{ github.sha }} .
+                docker build -t devops-core-app:${{ github.sha }} .
