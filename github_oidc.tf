@@ -39,7 +39,7 @@ resource "aws_iam_role_policy_attachment" "github_ecr_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 }
 
-# Output the exact Role ARN string so you can easily copy it in the next step
+# Output the exact Role ARN string so you can easily copy it for the next step
 output "github_actions_role_arn" {
   value       = aws_iam_role.github_actions_role.arn
   description = "Copy this ARN value directly into your GitHub actions workflow file!"
