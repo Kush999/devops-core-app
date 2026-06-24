@@ -45,7 +45,7 @@ output "github_actions_role_arn" {
   description = "Copy this ARN value directly into your GitHub actions workflow file!"
 }
 
-# Grant global ECR authentication clearance to the GitHub runner
+# Grant both global login clearance AND explicit repository push/pull rights
 resource "aws_iam_role_policy" "github_ecr_auth_policy" {
   name = "github-actions-ecr-auth-policy"
   role = aws_iam_role.github_actions_role.id
@@ -56,7 +56,21 @@ resource "aws_iam_role_policy" "github_ecr_auth_policy" {
       {
         Effect   = "Allow"
         Action   = "ecr:GetAuthorizationToken"
-        Resource = "*" # Global ECR auth requires a wildcard resource assignment
+        Resource = "*" # Required to be a wildcard for global auth token lookup
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:PutImage",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:DescribeRepositories"
+        ]
+        # Restricts push rights strictly to your specific repository for security best practices
+        Resource = "arn:aws:ecr:us-east-1:887401460142:repository/devops-core-app"
       }
     ]
   })
