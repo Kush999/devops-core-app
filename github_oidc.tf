@@ -44,3 +44,20 @@ output "github_actions_role_arn" {
   value       = aws_iam_role.github_actions_role.arn
   description = "Copy this ARN value directly into your GitHub actions workflow file!"
 }
+
+# Grant global ECR authentication clearance to the GitHub runner
+resource "aws_iam_role_policy" "github_ecr_auth_policy" {
+  name = "github-actions-ecr-auth-policy"
+  role = aws_iam_role.github_actions_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "ecr:GetAuthorizationToken"
+        Resource = "*" # Global ECR auth requires a wildcard resource assignment
+      }
+    ]
+  })
+}
