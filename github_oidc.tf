@@ -25,7 +25,7 @@ resource "aws_iam_role" "github_actions_role" {
           }
           StringLike = {
             # Replace 'YOUR_GITHUB_USERNAME' with your actual GitHub account name
-            "token.actions.githubusercontent.com:sub" = "repo:YOUR_GITHUB_USERNAME/devops-core-app:*"
+            "token.actions.githubusercontent.com:sub" = "repo:Kush999/devops-core-app:*"
           }
         }
       }
