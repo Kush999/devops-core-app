@@ -51,7 +51,7 @@ resource "aws_ecs_task_definition" "app_task" {
   container_definitions = jsonencode([
     {
       name      = "web-app"
-      image     = "ghcr.io/Kush999/devops-core-app:latest" 
+      image     = "${aws_ecr_repository.app_repo.repository_url}:latest" 
       essential = true
       portMappings = [
         {
