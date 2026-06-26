@@ -3,7 +3,7 @@ resource "aws_lb" "app_alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = [aws_subnet.public_1.id]
+  subnets            = [aws_subnet.public_1.id, aws_subnet.public_2.id]
 }
 
 resource "aws_lb_target_group" "app_tg" {
@@ -86,4 +86,9 @@ resource "aws_ecs_service" "web_service" {
     container_name   = "web-app" 
     container_port   = 5000
   }
+}
+
+output "application_load_balancer_dns" {
+  value       = aws_lb.app_alb.dns_name
+  description = "The public URL of your live production application"
 }
