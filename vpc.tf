@@ -81,3 +81,47 @@ resource "aws_route_table_association" "public_assoc" {
   subnet_id      = aws_subnet.public_1.id 
   route_table_id = aws_route_table.public_rt.id
 }
+
+# 1. Allocate a Static Public IP (Elastic IP) for the NAT Gateway
+resource "aws_eip" "nat_eip" {
+  domain     = "vpc"
+  depends_on = [aws_internet_gateway.gw]
+}
+
+# 2. Create the NAT Gateway inside your PUBLIC subnet
+resource "aws_nat_gateway" "nat_gw" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.public_1.id # Must be in public!
+
+  tags = {
+    Name = "production-nat-gateway"
+  }
+}
+
+# 3. ADDED: Create the missing Private Route Table
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  tags = {
+    Name = "production-private-rt"
+  }
+}
+
+# 4. Route outbound internet traffic from private subnets through the NAT Gateway
+resource "aws_route" "private_internet_route" {
+  route_table_id         = aws_route_table.private_rt.id 
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat_gw.id
+}
+
+# 5. ADDED: Associate Private Subnet 1 with the Private Route Table
+resource "aws_route_table_association" "private_assoc_1" {
+  subnet_id      = aws_subnet.private_1.id
+  route_table_id = aws_route_table.private_rt.id
+}
+
+# 6. ADDED: Associate Private Subnet 2 with the Private Route Table
+resource "aws_route_table_association" "private_assoc_2" {
+  subnet_id      = aws_subnet.private_2.id
+  route_table_id = aws_route_table.private_rt.id
+}
